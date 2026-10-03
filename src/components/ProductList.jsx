@@ -44,11 +44,17 @@ export default function ProductList({ user, onLogout }) {
   };
 
   return (
-    <div className="container">
-      <header>
-        <h1>Products</h1>
+    <div className="container dashboard-shell">
+      <header className="topbar panel">
+        <div>
+          <p className="eyebrow">Inventory</p>
+          <h1>Products</h1>
+        </div>
         <div className="header-right">
-          <span className="muted">Signed in as <strong>{user.username}</strong></span>
+          <span className={`role-badge ${isAdmin ? 'admin' : 'viewer'}`}>
+            {isAdmin ? 'Admin access' : 'Viewer mode'}
+          </span>
+          <span className="user-pill">{user.username}</span>
           <button className="secondary" onClick={onLogout}>Logout</button>
         </div>
       </header>
@@ -57,16 +63,34 @@ export default function ProductList({ user, onLogout }) {
       {notice && <div className="alert success" onClick={() => setNotice('')}>{notice}</div>}
 
       {isAdmin && (
-        <div className="toolbar">
+        <div className="toolbar panel">
+          <div>
+            <p className="eyebrow">Management</p>
+            <h2>Product control panel</h2>
+          </div>
           <button onClick={() => setFormFor({})}>+ Add product</button>
         </div>
       )}
 
+      {!isAdmin && (
+        <div className="viewer-banner panel">
+          <strong>View-only access:</strong> you can browse the product catalog, but only admins can create, edit, or delete items.
+        </div>
+      )}
+
       <div className="card table-wrap">
-        {loading ? <p className="center">Loading…</p> : (
+        {loading ? <p className="center">Loading product list…</p> : (
           <table>
             <thead>
-              <tr><th>#</th><th>Name</th><th>Description</th><th className="num">Price</th><th className="num">Qty</th><th>Created</th><th></th></tr>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th className="num">Price</th>
+                <th className="num">Qty</th>
+                <th>Created</th>
+                {isAdmin && <th className="actions-head">Actions</th>}
+              </tr>
             </thead>
             <tbody>
               {products.length === 0 && (
